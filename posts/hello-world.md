@@ -1,4 +1,5 @@
 ---
+category: 'Computer'
 title: 'Hello, World!'
 date: '2023-07-21'
 excerpt: 'This is my first blog post.'
