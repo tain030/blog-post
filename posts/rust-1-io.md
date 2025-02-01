@@ -1,20 +1,21 @@
 ---
 title: 'Rust 입출력: 효율적인 데이터 처리 방법'
 date: '2025-02-01'
+category: 'rust'
 ---
 
 ## 목차
 
-1. [Rust 입출력 개요](#rust-입출력-개요)
-2. [입력 처리 방법](#입력)
-   - [간단한 단일 입력: `io::stdin()`](#간단한-단일-입력-iostdin)
-   - [반복적인 입력: `io::stdin().lock()`](#반복적인-입력-iostdinlock)
-   - [대량 데이터/다중 입력 처리: `BufReader`](#대량-데이터다중-입력-처리-bufreader)
-3. [출력 처리 방법](#출력)
-   - [간단한 단일 출력: `println!()` 또는 `io::stdout()`](#간단한-단일-출력-println-또는-iostdout)
-   - [반복적인 출력: `io::stdout().lock()`](#반복적인-출력-iostdoutlock)
-   - [대량 데이터/다중 출력 처리: `BufWriter`](#대량-데이터다중-출력-처리-bufwriter)
-4. [결론](##결론)
+1. Rust 입출력 개요
+2. 입력 처리 방법
+   - 간단한 단일 입력: `io::stdin()`
+   - 반복적인 입력: `io::stdin().lock()`
+   - 대량 데이터/다중 입력 처리: `BufReader`
+3. 출력 처리 방법
+   - 간단한 단일 출력: `println!()` 또는 `io::stdout()`
+   - 반복적인 출력: `io::stdout().lock()`
+   - 대량 데이터/다중 출력 처리: `BufWriter`
+4. 결론
 
 ---
 

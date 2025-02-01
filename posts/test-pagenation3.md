@@ -1,6 +1,7 @@
 ---
 title: 'Test Pagenation3'
 date: '2025-01-30'
+category: 'blockchain'
 ---
 
 ## **목차**
