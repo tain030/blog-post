@@ -19,7 +19,7 @@ category: 'rust'
 
 ---
 
-file:///home/tain/Pictures/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7/%EC%8A%A4%ED%81%AC%EB%A6%B0%EC%83%B7%202025-02-01%2016-46-02.png
+https://blog.kakaocdn.net/dn/rAIay/btszbtfDapI/MkIZTYFnJYr9JuOVm5smgK/img.jpg
 
 Rust의 입출력은 크게 3가지로 나눌 수 있습니다.
 
