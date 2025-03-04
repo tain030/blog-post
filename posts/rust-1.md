@@ -8,13 +8,13 @@ category: 'rust'
 
 1. Rust 입출력 개요
 2. 입력 처리 방법
-  - 간단한 단일 입력: `io::stdin()`
-  - 반복적인 입력: `io::stdin().lock()`
-  - 대량 데이터/다중 입력 처리: `BufReader`
+    - 간단한 단일 입력: `io::stdin()`
+    - 반복적인 입력: `io::stdin().lock()`
+    - 대량 데이터/다중 입력 처리: `BufReader`
 3. 출력 처리 방법
-  - 간단한 단일 출력: `println!()` 또는 `io::stdout()`
-  - 반복적인 출력: `io::stdout().lock()`
-  - 대량 데이터/다중 출력 처리: `BufWriter`
+    - 간단한 단일 출력: `println!()` 또는 `io::stdout()`
+    - 반복적인 출력: `io::stdout().lock()`
+    - 대량 데이터/다중 출력 처리: `BufWriter`
 4. 결론
 
 ---
