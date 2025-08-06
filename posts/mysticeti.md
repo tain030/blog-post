@@ -128,9 +128,10 @@ Mysticeti에서 모든 트랜잭션은 블록에 포함되어 처리됩니다. �
 
 **Direct Decision Rule**
 
-|-|-|![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-3.png)
+|-|-|
+![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-3.png) | ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-4.png)
 
- | ![image][https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-4.png](그림2) Direct decision rule: to-commit | [그림3] Direct decision rule: to-skip
+(그림2) Direct decision rule: to-commit | [그림3] Direct decision rule: to-skip
 |-|-|
 
 그림2와 같이 Certificate Pattern이 관찰되어 *certified*되면 **블록 $L_r$은 to-commit 상태로 결정되며, 그림3과 같이Skip Pattern이 관찰되면 to-skip 상태가 됩니다. 이것을 Direct decision rule이라 하며 대부분의 정상적인 상황에서 이것으로 충분합니다.
