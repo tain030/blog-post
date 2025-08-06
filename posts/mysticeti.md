@@ -125,11 +125,16 @@ Mysticeti에서 모든 트랜잭션은 블록에 포함되어 처리됩니다. �
 
 **Direct Decision Rule**
 
-|-|-|
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-3.png) | ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-4.png)
-
-(그림2) Direct decision rule: to-commit | [그림3] Direct decision rule: to-skip
-|-|-|
+<table>
+<tr>
+<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-3.png" alt="Direct decision rule: to-commit" /></td>
+<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-4.png" alt="Direct decision rule: to-skip" /></td>
+</tr>
+<tr>
+<td>[그림2] Direct decision rule: to-commit</td>
+<td>[그림3] Direct decision rule: to-skip</td>
+</tr>
+</table>
 
 그림2와 같이 Certificate Pattern이 관찰되어 *certified*되면 **블록 $L_r$은 to-commit 상태로 결정되며, 그림3과 같이Skip Pattern이 관찰되면 to-skip 상태가 됩니다. 이것을 Direct decision rule이라 하며 대부분의 정상적인 상황에서 이것으로 충분합니다.
 
@@ -142,9 +147,16 @@ Mysticeti에서 모든 트랜잭션은 블록에 포함되어 처리됩니다. �
 
 r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 r+3 라운드에서 처음으로 나오는 to-commit 또는 undecided 상태의 블록을 블록 $L_r$의 **앵커(anchor)**로 정합니다. 이 앵커의 상태에 따라 블록 $L_r$의 상태가 결정됩니다.
 
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-6.png) | ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-7.png)
-
-[그림5] Indirect decision rule: to-commit | [그림6] Indirect decision rule: to-skip
+<table>
+<tr>
+<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-6.png" alt="Indirect decision rule: to-commit" /></td>
+<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-7.png" alt="Indirect decision rule: to-skip" /></td>
+</tr>
+<tr>
+<td>[그림5] Indirect decision rule: to-commit</td>
+<td>[그림6] Indirect decision rule: to-skip</td>
+</tr>
+</table>
 
 앵커가 undecided라면 블록 $L_r$도 여전히 undecided로 남게 됩니다. 하지만 앵커가 to-commit이라면 앵커가 블록 $L_r$의 certificate pattern을 참조하고 있다면 to-commit 상태가 되고, 그렇지 않다면 to-skip 상태가 됩니다.
 
@@ -168,9 +180,16 @@ r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 
 
 그림7과 같이 암묵적 투표와 명시적 투표를 종합하여 2f+1이상의 검증자로부터 충분한 투표를 받고 certificate pattern이 관측되면 트랜잭션을 실행할 수 있습니다.
 
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-9.png) |
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-10.png)
-[그림8] fast-path 트랜잭션 커밋 방법1 | [그림9] fast-path 트랜잭션 커밋 방법2
+<table>
+<tr>
+<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-9.png" alt="fast-path 트랜잭션 커밋 방법1" /></td>
+<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-10.png" alt="fast-path 트랜잭션 커밋 방법2" /></td>
+</tr>
+<tr>
+<td>[그림8] fast-path 트랜잭션 커밋 방법1</td>
+<td>[그림9] fast-path 트랜잭션 커밋 방법2</td>
+</tr>
+</table>
 
 이렇게 실행된 트랜잭션은 그림8,9와 같이 둘 중 하나의 조건을 만족하게 되면 커밋됩니다.
 
