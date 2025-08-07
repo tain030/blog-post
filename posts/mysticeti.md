@@ -4,7 +4,7 @@ date: '2025-07-25'
 category: 'blockchain'
 ---
 
-## 목차
+### **목차**
 
 - 개요
 - Mysticeti의 특징
