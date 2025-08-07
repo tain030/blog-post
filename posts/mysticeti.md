@@ -4,12 +4,13 @@ date: '2025-07-25'
 category: 'blockchain'
 ---
 
-### **목차**
+**목차**
 
 - 개요
 - Mysticeti의 특징
 - Mysticeti의 작동 방식
 - 요약
+
 
 ## 개요
 
