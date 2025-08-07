@@ -112,10 +112,9 @@ Mysticeti에서 모든 트랜잭션은 블록에 포함되어 처리됩니다. �
 - *Certificate Pattern*
 - *Skip Pattern*
 
-<figure>
-  <img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-2.png" />
-  <figcaption>[그림1] Certificate Pattern과 Skip Pattern</figcaption>
-</figure>
+|![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-2.png)|
+|:--:|
+|[그림1] Certificate Pattern, Skip Pattern|
 
 먼저 *Certificate Pattern*([그림1]의 오른쪽)은 자식 라운드(r+1)의 `2f+1`개 이상의 블록이 r라운드의 블록($L_r$)을 부모 블록으로 지지하는 패턴입니다. Mysticeti에서는 이 경우 블록 $L_r$이 *certified* 되었다고 하며, 블록에 포함된 트랜잭션들이 Safety를 만족하여 실행할 수 있게 됩니다. 즉, 그림과 같이 N = 4일 때 3개 이상의 지지를 받게 되는 경우입니다. 참고로 꼭 r+2 라운드가 아니더라도 $L_r$을 지지했던 r+1 라운드의 블록들을 모두 자신의 경로에 포함하고 있는 블록([그림1 (b)] r+2 라운드의 녹색 블록)을 블록 $L_r$의 **certificate**라고 합니다.
 
