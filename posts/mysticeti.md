@@ -4,7 +4,10 @@ date: '2025-07-25'
 category: 'blockchain'
 ---
 
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti.png)
+<figure>
+  <img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti.png" alt="Mysticeti Overview">
+  <figcaption>[그림1] Mysticeti 개요</figcaption>
+</figure>
 
 ### 목차
 
@@ -128,16 +131,16 @@ Mysticeti에서 모든 트랜잭션은 블록에 포함되어 처리됩니다. �
 
 **Direct Decision Rule**
 
-<table>
-<tr>
-<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-3.png" alt="Direct decision rule: to-commit" /></td>
-<td><img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-4.png" alt="Direct decision rule: to-skip" /></td>
-</tr>
-<tr>
-<td>[그림2] Direct decision rule: to-commit</td>
-<td>[그림3] Direct decision rule: to-skip</td>
-</tr>
-</table>
+<div class="image-row">
+  <figure>
+    <img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-3.png" alt="Direct decision rule: to-commit" />
+    <figcaption>[그림2] Direct decision rule: to-commit</figcaption>
+  </figure>
+  <figure>
+    <img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-4.png" alt="Direct decision rule: to-skip" />
+    <figcaption>[그림3] Direct decision rule: to-skip</figcaption>
+  </figure>
+</div>
 
 그림2와 같이 Certificate Pattern이 관찰되어 *certified*되면 **블록 $L_r$은 to-commit 상태로 결정되며, 그림3과 같이Skip Pattern이 관찰되면 to-skip 상태가 됩니다. 이것을 Direct decision rule이라 하며 대부분의 정상적인 상황에서 이것으로 충분합니다.
 
@@ -145,8 +148,10 @@ Mysticeti에서 모든 트랜잭션은 블록에 포함되어 처리됩니다. �
 
 **Indirect Decision Rule**
 
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-5.png)
-[그림4] Indirect decision rule: anchor
+<figure>
+  <img src="https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-5.png" alt="Indirect decision rule: anchor">
+  <figcaption>[그림4] Indirect decision rule: anchor</figcaption>
+</figure>
 
 r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 r+3 라운드에서 처음으로 나오는 to-commit 또는 undecided 상태의 블록을 블록 $L_r$의 **앵커(anchor)**로 정합니다. 이 앵커의 상태에 따라 블록 $L_r$의 상태가 결정됩니다.
 
