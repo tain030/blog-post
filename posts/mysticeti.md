@@ -1,3 +1,12 @@
+---
+
+title: 'Mysticeti: 수이의 합의 알고리즘'
+
+date: '2025-07-25'
+
+category: 'blockchain'
+
+---
 
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti.png)
 
