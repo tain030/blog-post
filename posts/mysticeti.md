@@ -2,7 +2,7 @@
 
 title: 'Mysticeti: 수이의 합의 알고리즘'
 
-date: '2025-07-25'
+date: '2025-09-05'
 
 category: 'blockchain'
 
