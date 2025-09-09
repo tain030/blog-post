@@ -8,6 +8,7 @@ category: 'blockchain'
 
 ---
 
+
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti.png)
 
 [그림1] Mysticeti 개요
@@ -24,7 +25,7 @@ category: 'blockchain'
 
 최근 두바이에서 열린 Sui Basecamp 2025에서 미스틴 랩스(Mysten Labs)는 합의 알고리즘 **Mysticeti의 두 번째 버전(V2)** 을 공식 발표했다. Mysticeti V2는 Mysticeti V1으로 전환할 때와 같은 단발적 교체 작업이 아니라, 이미 안정적으로 운영 중인 Mysticeti를 기반으로 점진적인 최적화 시리즈를 도입하는 형태다.
 
-특히 주목할 점은, Narwhal & Tusk, Bullshark, 그리고 Mysticeti V1까지 이어지는 짧은 시간 동안의 급격한 혁신적 개선 이후, Mysticeti V2는 V1 공개 약 1년 반 만에 등장했다는 것이다. 이는 곧 Mysticeti V1이 충분히 성숙하고 안정적인 합의 프로토콜로 자리 잡았음을 보여준다. 즉, 더 이상 프로토콜 전체를 갈아엎는 “파괴적 혁신(breaking change)”이 아닌, 세밀한 성능·효율성 개선에 집중하는 단계로 넘어왔다는 방증이다.
+특히 주목할 점은, Narwhal & Tusk, Bullshark, 그리고 Mysticeti V1까지 이어지는 짧은 시간 동안의 획기적인 변화 이후, Mysticeti V2는 V1 공개 약 1년 반 만에 등장했다는 것이다. 이는 곧 Mysticeti V1이 충분히 성숙하고 안정적인 합의 프로토콜로 자리 잡았음을 보여준다. 즉, 더 이상 프로토콜 전체를 갈아엎는 변화가 아닌, 세밀한 성능·효율성 개선에 집중하는 단계로 넘어왔다는 방증이다.
 
 이러한 맥락에서 Mysticeti V2의 발표는 Mysticeti가 이미 **실제 프로덕션 환경에서 검증된 고성능 BFT 합의 알고리즘**임을 드러내며, 앞으로의 개선이 안정성과 최적화에 초점을 맞출 것임을 시사한다.
 
@@ -93,10 +94,19 @@ Mysticeti는 블록(정확히는 proposer slot)을 다음 세 가지 상태 중 
 
 이를 위해 Mysticeti는 DAG 안에서 두 가지 핵심 패턴을 식별한다.
 
+1. **Certificate Pattern**
+
+먼저 _Certificate Pattern_([그림1]의 오른쪽)은 자식 라운드(r+1)의 `2f+1`개 이상의 블록이 r라운드의 블록($L_r$)을 부모 블록으로 지지하는 패턴입니다. Mysticeti에서는 이 경우 블록 $L_r$이 _certified_ 되었다고 하며, 블록에 포함된 트랜잭션들이 Safety를 만족하여 실행할 수 있게 됩니다. 즉, 그림과 같이 N = 4일 때 3개 이상의 지지를 받게 되는 경우입니다. 참고로 꼭 r+2 라운드가 아니더라도 $L_r$을 지지했던 r+1 라운드의 블록들을 모두 자신의 경로에 포함하고 있는 블록([그림1 (b)] r+2 라운드의 녹색 블록)을 블록 $L_r$의 **certificate**라고 합니다.
+
+2. **Skip Pattern**
+
+반대로 _Skip Pattern_([그림1]의 왼쪽)은 자식 라운드(r+1)의 `2f+1`개 이상의 블록이 r라운드의 블록($L_r$)을 지지하지 않는 패턴입니다. 여기서 주의할 점은 부모 블록으로 받은 지지가 `2f+1`개에 미치지 못한 것이 아니라, `2f+1`개 이상의 블록이 부모 블록으로 지지하지 않을 때라는 것입니다. 즉, 이 경우 2개의 r+1 블록으로부터 지지를 받았을 경우에는 Skip Pattern이 아니고 0개 혹은 1개의 블록에게만 지지받았을 경우가 됩니다.
+
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-2.png)
 
 [그림1] Certificate Pattern, Skip Pattern
 
+### 상태 결정 규칙
 
 1. **Direct Decision Rule**
 
@@ -115,7 +125,7 @@ Mysticeti는 블록(정확히는 proposer slot)을 다음 세 가지 상태 중 
 
 2. **Indirect Decision Rule**
 
-모든 블록이 Direct Rule에서 명확히 결정되는 것은 아니다. 어떤 블록은 여전히 undecided 상태로 남는데, 이때 적용되는 것이 **간접 결정 규칙(Indirect Decision Rule)** 이다. 규칙은 단순하다. undecided 블록이 있으면 3라운드 뒤에 처음 등장하는 블록을 기준점, 즉 앵커(anchor)로 삼는다. 앵커가 to-commit 상태라면, undecided 블록도 조건에 따라 함께 to-commit 되거나 to-skip 으로 정리된다. 반대로 앵커가 여전히 undecided 상태라면 기존 undecided 블록도 그대로 유지된다. 이렇게 해서 Direct Rule에서 남은 블록들도 점차 결정된다.
+모든 블록이 Direct Rule에서 명확히 결정되는 것은 아니다. 어떤 블록은 여전히 undecided 상태로 남는데, 이때 적용되는 것이 **간접 결정 규칙(Indirect Decision Rule)** 이다. 규칙은 단순하다. undecided 블록이 있으면 3라운드 뒤에 처음 등장하는 **to-commit 또는 undecided** 블록을 기준점, 즉 앵커(anchor)로 삼는다. 앵커가 to-commit 상태라면, undecided 블록도 조건에 따라 함께 to-commit 되거나 to-skip 으로 정리된다. 반대로 앵커가 여전히 undecided 상태라면 기존 undecided 블록도 그대로 유지된다. 이렇게 해서 Direct Rule에서 남은 블록들도 점차 결정된다.
 
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-5.png)
 [그림4] Indirect decision rule: anchor
@@ -141,17 +151,19 @@ r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 
 
 ### Fast-path 트랜잭션 커밋 방식
 
-앞서 fast-path 트랜잭션도 블록에 포함되어 합의가 진행되며, 자신이 포함된 블록이 커밋되기 전이라도 충분한 투표를 받으면 트랜잭션이 먼저 커밋하여 지연시간을 줄일 수 있다고 하였습니다.
+Mysticeti의 재미있는 특징은 트랜잭션이 블록보다 먼저 커밋될 수 있다는 점이다.
 
-투표는 암묵적 투표와 명시적 투표 2가지로 나뉩니다.
+앞서 말했듯이 합의가 필요하지 않은 트랜잭션도 합의를 처음부터 건너뛰는 것이 아니라, 블록에 포함되어 합의가 진행되지만 충분한 투표를 받으면 자신이 포함된 블록이 커밋되기 전이라도 독립적으로 먼저 커밋된다. 이를 **Fast-path 커밋**이라고 한다.
 
-- 검증자가 트랜잭션을 수신한 후 **자신의 블록에 그것을 포함시키는 행위**는 암묵적 투표
-- 명시적으로 특정 트랜잭션에 대한 투표 메시지를 넣는 경우는 명시적 투표
+이때 트랜잭션이 받는 투표는 암묵적 투표와 명시적 투표 2가지로 나뉜다.
+
+- **암묵적 투표(Implicit Vote)**: 검증자가 트랜잭션을 수신한 후 자신의 블록에 포함시키는 행위
+- **명시적 투표(Explicit Vote)**: 명시적으로 특정 트랜잭션에 대한 투표 메시지를 넣는 경우
 
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-8.png)
 [그림7] fast-path 트랜잭션 실행
 
-그림7과 같이 암묵적 투표와 명시적 투표를 종합하여 2f+1이상의 검증자로부터 충분한 투표를 받고 certificate pattern이 관측되면 트랜잭션이 실행할 수 있습니다.
+그림7과 같이 암묵적 투표와 명시적 투표를 종합하여 2f+1이상의 검증자로부터 충분한 투표를 받고 certificate pattern이 관측되면 트랜잭션이 실행할 수 있다.
 
 <div style="display: flex; justify-content: space-around; align-items: flex-start;">
   <div style="flex: 1; text-align: center; margin: 0 10px;">
@@ -164,31 +176,13 @@ r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 
   </div>
 </div>
 
-이렇게 실행된 트랜잭션은 그림8,9와 같이 둘 중 하나의 조건을 만족하게 되면 커밋됩니다.
+이렇게 실행된 트랜잭션은 그림8,9와 같이 둘 중 하나의 조건을 만족하게 되면 커밋된다.
 
 (1) 2f + 1 개의 certificate pattern
 
 (2) 1 개의 certificate라도 합의에 의해 커밋된 블록의 인과적 히스토리에 포함
 
-### Fast-path 트랜잭션 커밋
-
-Mysticeti의 재미있는 특징은 트랜잭션이 블록보다 먼저 커밋될 수 있다는 점이다.
-
-앞서 말했듯이 모든 트랜잭션은 블록에 포함되지만, 후속 블록들로부터 충분한 투표를 받으면 블록이 확정되기 전에 트랜잭션이 먼저 커밋된다. 이를 **Fast-path 커밋**이라고 한다.
-
-투표 방식은 두 가지다.
-
-- **암묵적 투표(Implicit Vote)**: 검증자가 트랜잭션을 자기 블록에 포함시키는 것 자체가 투표가 된다.
-    
-- **명시적 투표(Explicit Vote)**: 특정 트랜잭션을 빠르게 확정하기 위해 별도의 투표 메시지를 블록에 기록한다.
-    
-
-트랜잭션은 2f+1 이상의 검증자로부터 투표를 받고, 그 결과 Certificate Pattern이 관찰되면 실행할 수 있게 된다.
-
-이때 커밋 조건은 두 가지가 있다. 첫째, 트랜잭션이 포함된 블록이 2f+1개의 certificate pattern을 확보하면 커밋된다. 둘째, 단 하나의 certificate만 있더라도, 그 certificate가 이미 커밋된 블록의 인과적 히스토리에 포함되어 있으면 커밋된다.
-
 이 과정을 통해 Mysticeti는 블록 확정과 별도로 트랜잭션 단위에서 초저지연 커밋을 실현한다.
-
 
 ## 참고문헌
 
