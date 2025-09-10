@@ -11,15 +11,14 @@ category: 'blockchain'
 
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti.png)
 
-[그림1] Mysticeti 개요
-
 ### 목차
 
 - 개요
 - Mysticeti의 특징
 - Mysticeti의 작동 방식
-- Mysticeti V2에서의 변화
+- Mysticeti v2의 주요 개선 사항
 - 마무리
+
 
 ## 개요
 
@@ -31,13 +30,23 @@ category: 'blockchain'
 
 이번 글에서는 Mysticeti의 특징과 작동 방식에 대해 자세히 살펴보고, V2에서 발표된 변화와 앞으로 기대할 수 있는 최적화 방향까지 정리해본다.
 
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-1.png)
 
-## Mysticeti 특징
+## Mysticeti의 특징
 
 Mysticeti 이전에도 Sui는 Bullshark라는 DAG 기반 BFT 합의 알고리즘을 사용하고 있었다. 그러나 Bullshark는 DAG 구조임에도 불구하고 기존 선형 블록체인과 유사한 **certified(명시적 인증) 방식**을 채택했다. 즉, 블록을 확정하기 위해 검증자 서명을 수집하고 이를 다시 인증하는 절차를 거쳤다.
 
 이 방식은 **처리량(throughput)** 측면에서는 성과가 있었지만, **지연 시간(latency)** 을 낮추는 데에는 한계가 있었다. 예컨대, 여러 블록이 동시에 한꺼번에 커밋되는 상황이 발생하거나, 실제 트랜잭션 실행보다 서명 수집과 인증 과정에서 더 많은 리소스가 소모되는 비효율이 있었다.
+
+<details>
+<summary><strong>지연 시간(Latency) vs. 처리량(Throughput)</strong></summary>
+<ul>
+<li><strong>지연 시간</strong><br>
+트랜잭션이 제출된 후 블록체인에 <b>최종 확정</b>되기까지 걸리는 시간 (즉, finality 시간)</li>
+<br>
+<li><strong>처리량</strong><br>
+시스템이 <b>단위 시간당</b> 처리 가능한 트랜잭션 수 (보통 초당 트랜잭션 수, TPS)</li>
+</ul>
+</details>
 
 이러한 문제를 해결하기 위해 Mysticeti는 다음과 같은 **세 가지 핵심 설계 특징**을 도입했다.
 
@@ -45,21 +54,22 @@ Mysticeti 이전에도 Sui는 Bullshark라는 DAG 기반 BFT 합의 알고리즘
 
 Mysticeti는 기존의 명시적 인증(certification) 절차를 제거하고, 대신 **지지(support)** 와 **투표(vote)** 라는 개념을 활용하는 **uncertified DAG** 방식을 채택했다.
 
+<details>
+<summary><strong>지지(Support) vs. 투표(Vote)</strong></summary>
+<ul>
+<li><strong>지지(Support)</strong><br>
+블록 B′가 과거의 블록 B ≡ (A, r, h)를 "지지"한다고 할 때, 이는 B′에서 해시를 따라 <strong>깊이 우선 탐색</strong>했을 때 검증자 A가 라운드 r에서 생성한 최초의 블록이 B인 경우를 의미한다.<br>
+이는 비잔틴 노드가 여러 개의 블록을 만들었더라도, 모든 정직한 노드가 동일한 블록을 선택하게 하는 결정론적인(deterministic) 역할을 한다.</li>
+<br>
+<li><strong>투표(Vote)</strong><br>
+과거 트랜잭션에 대한 찬반의 의사를 블록에 기록하는 것을 의미한다.<br>
+이는 블록 공간을 차지하는 트랜잭션 종류의 한 가지이며, 암묵적 투표와 명시적 투표로 나뉜다. 자세한 내용은 Fast-path 트랜잭션 커밋 방식에서 다루자.</li>
+</ul>
+</details>
+
 기존 방식에서는 블록을 커밋하기 위해 서명 → 서명 검증 → 최종 인증이라는 복잡한 3단계 메시지 교환이 필요했다. 반면 Mysticeti에서는 단순히 블록을 전파하고 DAG에 연결하는 것만으로 합의에 참여할 수 있다.
 
 검증자는 문제가 없는 블록을 받으면 별도의 서명을 보내지 않고, 자신의 블록 안에서 과거 블록을 지지(support)하거나 특정 트랜잭션에 투표(vote)함으로써 간접적으로, 그러나 결정론적으로 인증을 수행한다.
-
-#### 지지(Support) vs. 투표(Vote)
-
-- **지지(Support)**
-	블록 B′가 과거의 블록 B ≡ (A, r, h)를 "지지"한다고 할 때, 이는 B′에서 해시를 따라 **깊이 우선 탐색**했을 때 검증자 A가 라운드 r에서 생성한 최초의 블록이 B인 경우를 의미한다.
-	
-	이는 비잔틴 노드가 여러 개의 블록을 만들었더라도, 모든 정직한 노드가 동일한 블록을 선택하게 하는 결정론적인(deterministic) 역할을 한다.
-
-- **투표(Vote)**
-	과거 트랜잭션에 대한 찬반의 의사를 블록에 기록하는 것을 의미한다.
-	
-	이는 블록 공간을 차지하는 트랜잭션 종류의 한 가지이며, 암묵적 투표와 명시적 투표로 나뉜다. 자세한 내용은 Fast-path 트랜잭션 커밋 방식에서 다루자.
 
 ### 2. Independent Commit per Block
 
@@ -96,19 +106,17 @@ Mysticeti는 블록(정확히는 proposer slot)을 다음 세 가지 상태 중 
 
 1. **Certificate Pattern**
 
-먼저 _Certificate Pattern_([그림1]의 오른쪽)은 자식 라운드(r+1)의 `2f+1`개 이상의 블록이 r라운드의 블록($L_r$)을 부모 블록으로 지지하는 패턴입니다. Mysticeti에서는 이 경우 블록 $L_r$이 _certified_ 되었다고 하며, 블록에 포함된 트랜잭션들이 Safety를 만족하여 실행할 수 있게 됩니다. 즉, 그림과 같이 N = 4일 때 3개 이상의 지지를 받게 되는 경우입니다. 참고로 꼭 r+2 라운드가 아니더라도 $L_r$을 지지했던 r+1 라운드의 블록들을 모두 자신의 경로에 포함하고 있는 블록([그림1 (b)] r+2 라운드의 녹색 블록)을 블록 $L_r$의 **certificate**라고 합니다.
+_Certificate Pattern_([그림1]의 오른쪽)은 자식 라운드($r+1$)의 $2f+1$개 이상의 블록이 r라운드의 블록($L_r$)을 부모 블록으로 지지하는 패턴입니다. Mysticeti에서는 이 경우 블록 $L_r$이 _certified_ 되었다고 하며, 블록에 포함된 트랜잭션들이 Safety를 만족하여 실행할 수 있게 됩니다. 즉, 그림과 같이 N = 4일 때 3개 이상의 지지를 받게 되는 경우입니다. 참고로 꼭 $r+2$ 라운드가 아니더라도 $L_r$을 지지했던 $r+1$ 라운드의 블록들을 모두 자신의 경로에 포함하고 있는 블록([그림1 (b)] $r+2$ 라운드의 녹색 블록)을 블록 $L_r$의 **certificate**라고 합니다.
 
 2. **Skip Pattern**
 
-반대로 _Skip Pattern_([그림1]의 왼쪽)은 자식 라운드(r+1)의 `2f+1`개 이상의 블록이 r라운드의 블록($L_r$)을 지지하지 않는 패턴입니다. 여기서 주의할 점은 부모 블록으로 받은 지지가 `2f+1`개에 미치지 못한 것이 아니라, `2f+1`개 이상의 블록이 부모 블록으로 지지하지 않을 때라는 것입니다. 즉, 이 경우 2개의 r+1 블록으로부터 지지를 받았을 경우에는 Skip Pattern이 아니고 0개 혹은 1개의 블록에게만 지지받았을 경우가 됩니다.
+반대로 _Skip Pattern_([그림1]의 왼쪽)은 자식 라운드(r+1)의 $2f+1$개 이상의 블록이 r라운드의 블록($L_r$)을 지지하지 않는 패턴입니다. 여기서 주의할 점은 부모 블록으로 받은 지지가 $2f+1$개에 미치지 못한 것이 아니라, $2f+1$개 이상의 블록이 부모 블록으로 지지하지 않을 때라는 것입니다. 즉, 이 경우 2개의 $r+1$ 블록으로부터 지지를 받았을 경우에는 Skip Pattern이 아니고 0개 혹은 1개의 블록에게만 지지받았을 경우가 됩니다.
 
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-2.png)
 
 [그림1] Certificate Pattern, Skip Pattern
 
 ### 상태 결정 규칙
-
-1. **Direct Decision Rule**
 
 가장 먼저 적용되는 규칙은 **직접 결정 규칙(Direct Decision Rule)** 이다. 합의 과정에서 어떤 블록이 특정한 패턴을 만족하는지를 확인하는데, 만약 그 블록이 Certificate Pattern을 보이면 곧바로 to-commit 상태가 된다. 반대로 Skip Pattern을 보이면 to-skip 상태가 된다. 전체 합의의 대부분은 이 단계에서 빠르게 결정되므로, 정상적인 상황에서는 블록이 즉시 commit 혹은 skip 상태로 정리된다.
 
@@ -123,14 +131,12 @@ Mysticeti는 블록(정확히는 proposer slot)을 다음 세 가지 상태 중 
   </div>
 </div>
 
-2. **Indirect Decision Rule**
-
 모든 블록이 Direct Rule에서 명확히 결정되는 것은 아니다. 어떤 블록은 여전히 undecided 상태로 남는데, 이때 적용되는 것이 **간접 결정 규칙(Indirect Decision Rule)** 이다. 규칙은 단순하다. undecided 블록이 있으면 3라운드 뒤에 처음 등장하는 **to-commit 또는 undecided** 블록을 기준점, 즉 앵커(anchor)로 삼는다. 앵커가 to-commit 상태라면, undecided 블록도 조건에 따라 함께 to-commit 되거나 to-skip 으로 정리된다. 반대로 앵커가 여전히 undecided 상태라면 기존 undecided 블록도 그대로 유지된다. 이렇게 해서 Direct Rule에서 남은 블록들도 점차 결정된다.
 
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-5.png)
 [그림4] Indirect decision rule: anchor
 
-r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 r+3 라운드에서 처음으로 나오는 to-commit 또는 undecided 상태의 블록을 블록 $L_r$의 앵커(anchor)로 정한다. 이 앵커의 상태에 따라 블록 $L_r$의 상태가 결정된다.
+r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 $r+3$ 라운드에서 처음으로 나오는 to-commit 또는 undecided 상태의 블록을 블록 $L_r$의 앵커(anchor)로 정한다. 이 앵커의 상태에 따라 블록 $L_r$의 상태가 결정된다.
 
 <div style="display: flex; justify-content: space-around; align-items: flex-start;">
   <div style="flex: 1; text-align: center; margin: 0 10px;">
@@ -144,8 +150,6 @@ r라운드의 블록 $L_r$이 undecided 상태라고 할 때, 3라운드 뒤인 
 </div>
 
 앵커가 undecided라면 블록 $L_r$도 여전히 undecided로 남게 된다. 하지만 앵커가 to-commit이라면 앵커가 블록 $L_r$의 certificate pattern을 참조하고 있다면 to-commit 상태가 되고, 그렇지 않다면 to-skip 상태가 된다.
-
-3. **Commit Sequence**
 
 마지막 단계는 **커밋 시퀀스(Commit Sequence)** 이다. 이 단계에서는 블록들을 순서대로 보면서 _to-commit_ 상태는 실제로 커밋하고, to-skip 상태는 건너뛴다. 만약 undecided 블록이 나오면 거기서 멈추고, 새로운 블록이 도착했을 때 다시 확인한다. 이렇게 순차적으로 commit과 skip을 처리하면서 DAG의 블록들이 일관된 순서대로 정리된다.
 
@@ -163,7 +167,7 @@ Mysticeti의 재미있는 특징은 트랜잭션이 블록보다 먼저 커밋�
 ![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticeti-8.png)
 [그림7] fast-path 트랜잭션 실행
 
-그림7과 같이 암묵적 투표와 명시적 투표를 종합하여 2f+1이상의 검증자로부터 충분한 투표를 받고 certificate pattern이 관측되면 트랜잭션이 실행할 수 있다.
+그림7과 같이 암묵적 투표와 명시적 투표를 종합하여 $2f+1$이상의 검증자로부터 충분한 투표를 받고 certificate pattern이 관측되면 트랜잭션이 실행할 수 있다.
 
 <div style="display: flex; justify-content: space-around; align-items: flex-start;">
   <div style="flex: 1; text-align: center; margin: 0 10px;">
@@ -178,14 +182,33 @@ Mysticeti의 재미있는 특징은 트랜잭션이 블록보다 먼저 커밋�
 
 이렇게 실행된 트랜잭션은 그림8,9와 같이 둘 중 하나의 조건을 만족하게 되면 커밋된다.
 
-(1) 2f + 1 개의 certificate pattern
-
-(2) 1 개의 certificate라도 합의에 의해 커밋된 블록의 인과적 히스토리에 포함
+(1) $2f+1$개의 certificate pattern을 확보하거나
+(2) 단 하나의 certificate라도 이미 커밋된 블록의 인과적 히스토리에 포함될 경우
 
 이 과정을 통해 Mysticeti는 블록 확정과 별도로 트랜잭션 단위에서 초저지연 커밋을 실현한다.
+
+
+## Mysticeti v2의 주요 개선 사항
+
+Mysticeti v1은 합의 지연 시간을 무려 **80% 줄이는 데 성공**했다. 이는 합의 프로토콜 분야에서 큰 진전이었지만, 앱 개발자, 시장 조성자, 그리고 검증인 운영자들과의 논의를 통해 추가 개선이 필요한 몇 가지 주제가 드러났다. 특히 **더 낮은 지연 시간, 더 높은 탄력성, 그리고 더 큰 유연성**이 앞으로 해결해야 할 과제로 지목되었다.
+
+첫 번째 개선점은 **지연 시간 단축**이다.  
+Mysticeti v2에서는 블록 생성 능력이 뛰어나고 브로드캐스트 지연 편차가 낮은 검증인만을 신뢰해 DAG의 앵커 역할을 맡기게 된다. 또한 링크 선택 알고리즘이 개선되어 리더가 연결하는 블록들이 모든 검증인에게 거의 동시에 도달하도록 조정된다. 여기에 더해 검증인의 네트워크 용량과 하드웨어 운영 개선이 반영되어, Mysticeti v1 출시 이후 P50과 P95 합의 지연 시간이 추가로 15% 감소했다. 마지막으로, 모든 트랜잭션이 정착되기 전 실행되던 선행 유효성 검사(pre-validation) 단계를 합의 과정과 병렬로 수행하도록 옮기고 있다. 이를 통해 **100~150밀리초의 지연 시간을 줄일 수 있을 것**으로 기대되고 있다.
+
+![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/mysticetiv2-1.png)
+
+두 번째 개선점은 **탄력성 강화**다.
+이는 2022년 11월 Sui Testnet Wave 1에서 발생한 네트워크 과부하 사건을 계기로 더욱 강조된 부분이다. 당시 일부 검증인이 네트워크의 최대 성능을 시험하기 위해 의도치 않게 너무 많은 블록을 빠르게 생성한 뒤 한꺼번에 브로드캐스트했다. 그 결과 네트워크에 갑작스러운 데이터 폭증이 발생했고, 다른 검증인들이 이를 동시에 처리하지 못해 합의가 지연되면서 결국 네트워크가 마비되는 상황이 벌어졌다.
+
+Mysticeti v2에서는 이러한 교훈이 직접 반영되었다. 합의 커밋 과정에서 한 번에 반영할 수 있는 블록 수에 제한을 두어 특정 검증인이 과도하게 많은 블록을 생성하거나 브로드캐스트하더라도 네트워크 전체가 영향을 받지 않도록 한 것이다.
+
+마지막 개선점은 **유연성 증대**다.
+현재는 검증인만 합의 구성 요소를 실행하고 블록을 다른 피어에게 브로드캐스트하며, 풀노드는 체크포인트를 통해서만 트랜잭션 스트림을 받는다. 그러나 이 방식은 지연 시간이 길고, 미인증 트랜잭션 스트림에 접근할 수 없다는 한계가 있다. Mysticeti v2에서는 검증인이 풀노드에도 블록 스트림을 제공하도록 변경하여, 풀노드가 미확정 및 인증된 트랜잭션 스트림을 가능한 한 빨리 받아볼 수 있도록 개선하고 있다.
+
 
 ## 참고문헌
 
 - [Safety and Liveness](https://medium.com/dsrv/safety-and-liveness-2c0f0f87aead)
 - [MYSTICETI: Reaching the Latency Limits with Uncertified DAGs](https://arxiv.org/pdf/2310.14821)
 - [Mysticeti v2: Breaking the Surface for Faster Sui Consensus](https://youtu.be/uS6rbdt_064?list=TLGGhzkrg_QVqu0wNDA5MjAyNQ)
+- [Sui Testnet Wave 1 Recap](https://blog.sui.io/sui-testnet-wave-1-recap/)
