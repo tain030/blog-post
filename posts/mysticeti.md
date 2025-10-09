@@ -1,6 +1,6 @@
 ---
 
-title: 'Mysticeti: 수이의 합의 알고리즘'
+title: '[합의 알고리즘] Mysticeti, The Uncertified DAG'
 
 date: '2025-09-05'
 
