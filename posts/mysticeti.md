@@ -1,10 +1,10 @@
 ---
 
-title: 'Consensus: Mysticeti, The Uncertified DAG'
+title: 'Research: Mysticeti, The Uncertified DAG'
 
 date: '2025-09-05'
 
-category: 'distributed-system'
+category: 'blockchain'
 
 ---
 
