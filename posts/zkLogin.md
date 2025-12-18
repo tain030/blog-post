@@ -1,6 +1,6 @@
 ---
 
-title: 'Research: zkLogin, Privacy-Preserving Blockchain Authentication with Existing Credentials'
+title: 'Research: zkLogin'
 
 date: '2025-10-15'
 
