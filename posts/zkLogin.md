@@ -8,7 +8,7 @@ category: 'cryptography'
 
 ---
 
-
+![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/zkLogin.webp)
 
 ### TLDR;
 
@@ -57,7 +57,7 @@ zkLogin 시스템에는 세 가지 주요 주체가 존재한다.
 3. **ZK 증명 서비스**  
     JWT, JWT 무작위성, 사용자 솔트, 최대 에포크를 입력으로 받아 영지식 증명을 생성하는 백엔드 서비스이다. 생성된 증명은 임시 서명과 함께 zkLogin 트랜잭션으로 온체인에 제출된다.
 
-![[Pasted image 20240415144423.png]]
+![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/zkLogin-1.png)
 
 (**0단계**)  
 zkLogin은 Groth16 zkSNARK를 사용하며, 이에 따라 회로에 연결된 구조화된 공통 참조 문자열(CRS)을 한 번 생성해야 한다. Sui Authority는 이 CRS를 기반으로 검증 키를 생성하며, 이 과정은 별도의 ceremony를 통해 수행된다.
