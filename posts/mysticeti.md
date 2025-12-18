@@ -1,6 +1,6 @@
 ---
 
-title: 'Research: Mysticeti, The Uncertified DAG'
+title: 'Research: Mysticeti'
 
 date: '2025-09-05'
 
