@@ -8,7 +8,7 @@ category: 'cryptography'
 
 ---
 
-![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/zkLogin.webp)
+![image](https://raw.githubusercontent.com/tain030/blog-post/main/images/zkLogin.png)
 
 ### TLDR;
 
